@@ -1,0 +1,44 @@
+<app-result-banner
+  [status]="tracker.status()?.status ?? 'PENDING'"
+  [paymentId]="tracker.paymentId()"
+/>
+@if (tracker.message(); as message) {
+  <app-alert [message]="message"
+    ><button class="text-button" type="button" (click)="tracker.refresh()">
+      Sprawdź ponownie ↻
+    </button></app-alert
+  >
+}
+<app-panel
+  title="Wyniki kontroli"
+  description="Statusy odczytane z systemu przetwarzania płatności."
+  [counter]="tracker.completed() + ' / ' + tracker.transactionCount() + ' transakcji'"
+>
+  <app-validation-row
+    title="Kontrola płatności"
+    description="Dane nadawcy i liczba transakcji"
+    [status]="tracker.status()?.paymentValidationStatus ?? 'PENDING'"
+    [reasonCodes]="tracker.status()?.reasonCodes ?? []"
+  />
+  @for (transaction of tracker.transactions(); track transaction.id) {
+    <app-validation-row
+      [title]="transaction.creditor.name"
+      [description]="transaction.creditor.accountNumber"
+      [amount]="transaction.amount"
+      [currency]="tracker.currency()"
+      [status]="transaction.status"
+      [reasonCodes]="transaction.reasonCodes"
+    />
+  }
+</app-panel>
+<div class="result-actions">
+  <button class="secondary" type="button" (click)="showTechnical.set(!showTechnical())">
+    {{ showTechnical() ? 'Ukryj dane techniczne' : 'Pokaż odpowiedź API' }}</button
+  ><button class="primary" type="button" (click)="flow.reset()">Nowe zlecenie ＋</button>
+</div>
+@if (showTechnical()) {
+  <section class="panel technical">
+    <h2>Odpowiedź systemu</h2>
+    <pre>{{ { payment: tracker.response(), validation: tracker.status() } | json }}</pre>
+  </section>
+}

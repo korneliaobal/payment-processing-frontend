@@ -66,7 +66,7 @@ describe('Home dashboard', () => {
     http.expectNone('/api/payments/upload');
   });
   it('offers a fresh payment even after an earlier submission', async () => {
-    sessionStorage.setItem('ledger-submitted-id', JSON.stringify(TEST_PAYMENT_ID));
+    sessionStorage.setItem('obalflow-submitted-id', JSON.stringify(TEST_PAYMENT_ID));
     const fixture = await openHome();
     flushDashboard();
     fixture.detectChanges();
@@ -75,7 +75,7 @@ describe('Home dashboard', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(TestBed.inject(Router).url).toBe('/payments/new');
-    expect(sessionStorage.getItem('ledger-submitted-id')).toBeNull();
+    expect(sessionStorage.getItem('obalflow-submitted-id')).toBeNull();
     expect(fixture.nativeElement.querySelector('input[name=debtorName]').value).toBe('');
   });
   it('shows an empty state and zero counts for a new database', async () => {

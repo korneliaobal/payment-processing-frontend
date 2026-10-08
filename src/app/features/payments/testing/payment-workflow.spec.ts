@@ -135,7 +135,7 @@ describe('Payment workspace', () => {
   });
 
   it('restores a saved draft on a direct review URL', async () => {
-    sessionStorage.setItem('ledger-draft', JSON.stringify(SAVED_DRAFT_FIXTURE));
+    sessionStorage.setItem('obalflow-draft', JSON.stringify(SAVED_DRAFT_FIXTURE));
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     await TestBed.inject(Router).navigateByUrl('/payments/review');

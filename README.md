@@ -1,4 +1,4 @@
-# Ledger — Payment Operations
+# ObalFlow — Payment Operations
 
 A portfolio application that simulates a bank employee's payment workspace. Operators create a batch payment, review the recipients and amounts, and inspect real validation results from an event-driven backend.
 

@@ -22,7 +22,7 @@ export const PAYMENT_ROUTES = {
   history: '/payments/history',
 } as const;
 export const PAYMENT_STORAGE = {
-  draft: 'ledger-draft',
-  submittedId: 'ledger-submitted-id',
-  snapshotPrefix: 'ledger-payment-',
+  draft: 'obalflow-draft',
+  submittedId: 'obalflow-submitted-id',
+  snapshotPrefix: 'obalflow-payment-',
 } as const;

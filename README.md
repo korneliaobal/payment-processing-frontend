@@ -115,7 +115,24 @@ The development proxy is defined in `src/proxy.conf.json`:
 
 Restart `npm start` after changing proxy settings or `angular.json`. Browser refresh does not reload the development proxy. Avoid running separate servers on `127.0.0.1:4200` and `[::1]:4200`; `localhost` may reach a different process.
 
-For production hosting, configure a reverse proxy for both API paths and serve `index.html` for application routes. The Angular development proxy is not included in a production build.
+Production uses the same centralized API configuration and calls both Railway backends directly. The Angular development proxy is not included in a production build.
+
+## Railway deployment
+
+`railway.toml` selects `Dockerfile.railway`. The multi-stage image installs dependencies with `npm ci` on Node.js 22, builds Angular in production mode, and serves `dist/payment-processing-frontend/browser` with nginx on port 8080. This output path is explicitly configured in `angular.json`. nginx falls back to `index.html` for application routes, including direct links and page refreshes.
+
+Create a Railway service from this repository. Use the repository root as the service root directory, leave build and start commands unset, and generate a public domain with target port **8080**. No API credentials or frontend environment variables are required. If a `PORT` variable is configured, set it to `8080` to match nginx.
+
+After generating the frontend domain, add its exact HTTPS origin to CORS in both backend services as a separate change. Until then, the deployed page can load, but browser API requests from its new origin will be blocked.
+
+Verify the image locally:
+
+```bash
+docker build -f Dockerfile.railway -t payment-processing-frontend:railway .
+docker run --rm -p 8080:8080 payment-processing-frontend:railway
+```
+
+Open `http://localhost:8080/payments/history` to verify the SPA route fallback. Backend CORS currently allows the development origin `http://localhost:4200`; this container check verifies static hosting rather than the payment flow.
 
 ## Verification
 

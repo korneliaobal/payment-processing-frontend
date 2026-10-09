@@ -101,6 +101,8 @@ Reusable components receive typed inputs and emit events; they do not inject pay
 
 ## Backend connection
 
+Payment upload is configured in `src/app/features/payments/config/payment.config.ts` and calls `https://obal-flow.up.railway.app/api/payments/upload` directly. The Railway API must allow the frontend origin through CORS. Status polling and history call `https://payment-orchestrator-service-production.up.railway.app/api/payment-status/{paymentId}` and `/api/payment-history` directly using `PAYMENT_ORCHESTRATOR_BASE_URL`. Both services must allow the frontend origin through CORS. These absolute URLs bypass the development proxy; the proxy mappings below are only used when endpoints are configured as relative paths.
+
 The development proxy is defined in `src/proxy.conf.json`:
 
 | Frontend path            | Backend target          |

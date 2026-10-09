@@ -58,7 +58,7 @@ describe('Payment workspace', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('form')).toBeTruthy();
-    http.expectNone('/api/payments/upload');
+    http.expectNone('https://obal-flow.up.railway.app/api/payments/upload');
   });
 
   it('blocks a correctly sized account with an invalid checksum', async () => {
@@ -81,14 +81,14 @@ describe('Payment workspace', () => {
     expect(fixture.nativeElement.querySelector('#debtor-account-error').textContent).toContain(
       'sumę kontrolną',
     );
-    http.expectNone('/api/payments/upload');
+    http.expectNone('https://obal-flow.up.railway.app/api/payments/upload');
   });
 
   it('creates a JSON file with correct totals and displays the real final status', async () => {
     const fixture = await reviewExample();
     expect(fixture.nativeElement.textContent).toContain('Sprawdź dane zlecenia');
     (fixture.nativeElement.querySelector('.summary .primary') as HTMLButtonElement).click();
-    const upload = http.expectOne('/api/payments/upload');
+    const upload = http.expectOne('https://obal-flow.up.railway.app/api/payments/upload');
     expect(upload.request.method).toBe('POST');
     const file = (upload.request.body as FormData).get('file') as File;
     const content = await new Promise<string>((resolve, reject) => {
@@ -104,7 +104,11 @@ describe('Payment workspace', () => {
     upload.flush(PAYMENT_RESPONSE_FIXTURE);
     await vi.waitFor(() => {
       fixture.detectChanges();
-      http.expectOne(`/api/payment-status/${TEST_PAYMENT_ID}`).flush(REJECTED_STATUS_FIXTURE);
+      http
+        .expectOne(
+          `https://payment-orchestrator-service-production.up.railway.app/api/payment-status/${TEST_PAYMENT_ID}`,
+        )
+        .flush(REJECTED_STATUS_FIXTURE);
     });
     fixture.detectChanges();
     expect(TestBed.inject(Router).url).toBe(`/payments/${TEST_PAYMENT_ID}`);
@@ -118,7 +122,7 @@ describe('Payment workspace', () => {
     const fixture = await reviewExample();
     (fixture.nativeElement.querySelector('.summary .primary') as HTMLButtonElement).click();
     http
-      .expectOne('/api/payments/upload')
+      .expectOne('https://obal-flow.up.railway.app/api/payments/upload')
       .flush(UPLOAD_ERROR_FIXTURE, { status: 400, statusText: 'Bad Request' });
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain(
@@ -151,13 +155,15 @@ describe('Payment workspace', () => {
     await vi.waitFor(() => {
       fixture.detectChanges();
       http
-        .expectOne(`/api/payment-status/${DIRECT_PAYMENT_ID}`)
+        .expectOne(
+          `https://payment-orchestrator-service-production.up.railway.app/api/payment-status/${DIRECT_PAYMENT_ID}`,
+        )
         .flush(DIRECT_PAYMENT_STATUS_FIXTURE);
     });
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Płatność przeszła walidację');
     expect(fixture.nativeElement.textContent).toContain('Transakcja 1');
-    http.expectNone('/api/payments/upload');
+    http.expectNone('https://obal-flow.up.railway.app/api/payments/upload');
     fixture.destroy();
   });
 });

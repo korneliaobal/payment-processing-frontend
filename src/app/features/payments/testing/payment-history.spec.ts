@@ -28,7 +28,11 @@ describe('Payment history', () => {
   }
   it('loads persisted payments, filters status and paginates', async () => {
     const fixture = await openHistory();
-    const request = http.expectOne((req) => req.url === '/api/payment-history');
+    const request = http.expectOne(
+      (req) =>
+        req.url ===
+        'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+    );
     expect(request.request.params.get('page')).toBe('0');
     request.flush(HISTORY_FIXTURE);
     fixture.detectChanges();
@@ -36,7 +40,11 @@ describe('Payment history', () => {
     (
       fixture.nativeElement.querySelector('.pagination button:last-child') as HTMLButtonElement
     ).click();
-    const next = http.expectOne((req) => req.url === '/api/payment-history');
+    const next = http.expectOne(
+      (req) =>
+        req.url ===
+        'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+    );
     expect(next.request.params.get('page')).toBe('1');
     next.flush({ ...HISTORY_FIXTURE, number: 1 });
     fixture.detectChanges();
@@ -44,7 +52,11 @@ describe('Payment history', () => {
     filter.value = 'NOT_OK';
     filter.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    const filtered = http.expectOne((req) => req.url === '/api/payment-history');
+    const filtered = http.expectOne(
+      (req) =>
+        req.url ===
+        'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+    );
     expect(filtered.request.params.get('status')).toBe('NOT_OK');
     expect(filtered.request.params.get('page')).toBe('0');
     filtered.flush(HISTORY_FIXTURE);
@@ -52,15 +64,25 @@ describe('Payment history', () => {
     (fixture.nativeElement.querySelector('tbody a') as HTMLAnchorElement).click();
     await vi.waitFor(() => {
       fixture.detectChanges();
-      http.expectOne(`/api/payment-status/${TEST_PAYMENT_ID}`).flush(DIRECT_PAYMENT_STATUS_FIXTURE);
+      http
+        .expectOne(
+          `https://payment-orchestrator-service-production.up.railway.app/api/payment-status/${TEST_PAYMENT_ID}`,
+        )
+        .flush(DIRECT_PAYMENT_STATUS_FIXTURE);
     });
     expect(TestBed.inject(Router).url).toBe(`/payments/${TEST_PAYMENT_ID}`);
-    http.expectNone('/api/payments/upload');
+    http.expectNone('https://obal-flow.up.railway.app/api/payments/upload');
     fixture.destroy();
   });
   it('shows missing legacy data explicitly', async () => {
     const fixture = await openHistory();
-    http.expectOne((req) => req.url === '/api/payment-history').flush(LEGACY_HISTORY_FIXTURE);
+    http
+      .expectOne(
+        (req) =>
+          req.url ===
+          'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+      )
+      .flush(LEGACY_HISTORY_FIXTURE);
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Brak zapisanej daty');
     expect(fixture.nativeElement.textContent).toContain('Brak zapisanych danych');
@@ -68,7 +90,11 @@ describe('Payment history', () => {
   it('allows retry after an API error', async () => {
     const fixture = await openHistory();
     http
-      .expectOne((req) => req.url === '/api/payment-history')
+      .expectOne(
+        (req) =>
+          req.url ===
+          'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+      )
       .flush({}, { status: 500, statusText: 'Error' });
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role="alert"]').textContent).toContain(
@@ -76,19 +102,31 @@ describe('Payment history', () => {
     );
     (fixture.nativeElement.querySelector('.panel-header button') as HTMLButtonElement).click();
     http
-      .expectOne((req) => req.url === '/api/payment-history')
+      .expectOne(
+        (req) =>
+          req.url ===
+          'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+      )
       .flush({ ...HISTORY_FIXTURE, content: [], totalElements: 0, totalPages: 0 });
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Brak zleceń');
   });
   it('cancels an older request when the filter changes during loading', async () => {
     const fixture = await openHistory();
-    const original = http.expectOne((req) => req.url === '/api/payment-history');
+    const original = http.expectOne(
+      (req) =>
+        req.url ===
+        'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+    );
     const filter = fixture.nativeElement.querySelector('select') as HTMLSelectElement;
     filter.value = 'NOT_OK';
     filter.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    const latest = http.expectOne((req) => req.url === '/api/payment-history');
+    const latest = http.expectOne(
+      (req) =>
+        req.url ===
+        'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+    );
     expect(original.cancelled).toBe(true);
     expect(latest.request.params.get('status')).toBe('NOT_OK');
     latest.flush(HISTORY_FIXTURE);

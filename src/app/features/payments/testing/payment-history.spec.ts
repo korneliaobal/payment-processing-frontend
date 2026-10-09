@@ -71,7 +71,7 @@ describe('Payment history', () => {
         .flush(DIRECT_PAYMENT_STATUS_FIXTURE);
     });
     expect(TestBed.inject(Router).url).toBe(`/payments/${TEST_PAYMENT_ID}`);
-    http.expectNone('https://obal-flow.up.railway.app/api/payments/upload');
+    http.expectNone('https://obal-flow-api.up.railway.app/api/payments/upload');
     fixture.destroy();
   });
   it('shows missing legacy data explicitly', async () => {

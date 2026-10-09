@@ -33,6 +33,17 @@ export const REJECTED_STATUS_FIXTURE: PaymentStatusResponse = {
 };
 
 export const DIRECT_PAYMENT_ID = '22222222-2222-4222-8222-222222222222';
+export const ACCEPTED_STATUS_FIXTURE: PaymentStatusResponse = {
+  ...REJECTED_STATUS_FIXTURE,
+  status: 'OK',
+  transactions: TEST_TRANSACTION_IDS.map((transactionId) => ({ transactionId, status: 'OK' })),
+};
+export const PENDING_STATUS_FIXTURE: PaymentStatusResponse = {
+  ...ACCEPTED_STATUS_FIXTURE,
+  status: 'PENDING',
+  paymentValidationStatus: 'PENDING',
+  transactions: TEST_TRANSACTION_IDS.map((transactionId) => ({ transactionId, status: 'PENDING' })),
+};
 export const DIRECT_PAYMENT_STATUS_FIXTURE: PaymentStatusResponse = {
   paymentId: DIRECT_PAYMENT_ID,
   status: 'OK',

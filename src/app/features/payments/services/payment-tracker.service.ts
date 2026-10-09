@@ -2,7 +2,7 @@ import type { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, DestroyRef, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { Subscription } from 'rxjs';
-import { EMPTY, catchError, exhaustMap, takeUntil, takeWhile, tap, timer } from 'rxjs';
+import { EMPTY, catchError, exhaustMap, takeUntil, takeWhile, tap, throwError, timer } from 'rxjs';
 import { PaymentApiService } from './payment-api.service';
 import { PaymentSessionService } from './payment-session.service';
 import { DEFAULT_CURRENCY, PAYMENT_POLLING } from '../config/payment.config';
@@ -11,7 +11,6 @@ import type { Currency } from '../models/currency.model';
 import { toDisplayTransactions } from '../utils/payment-result.mapper';
 import type { PaymentResponse } from '../models/payment-response.model';
 import type { PaymentStatusResponse } from '../models/payment-status-response.model';
-import { isPaymentPending } from '../utils/payment.validation';
 @Injectable({ providedIn: 'root' })
 export class PaymentTrackerService {
   private readonly api = inject(PaymentApiService);
@@ -53,7 +52,7 @@ export class PaymentTrackerService {
     this.messageState.set(null);
     const timeout = timer(PAYMENT_POLLING.timeoutMs).pipe(
       tap(() => {
-        if (isPaymentPending(this.status())) this.messageState.set(PAYMENT_MESSAGES.pollingTimeout);
+        this.messageState.set(PAYMENT_MESSAGES.pollingTimeout);
       }),
     );
     this.polling = timer(0, PAYMENT_POLLING.intervalMs)
@@ -61,19 +60,21 @@ export class PaymentTrackerService {
         exhaustMap(() =>
           this.api.getStatus(id).pipe(
             catchError((error: HttpErrorResponse) => {
-              if (error.status !== 404) this.messageState.set(PAYMENT_MESSAGES.statusUnavailable);
-              return EMPTY;
+              return error.status === 404 ? EMPTY : throwError(() => error);
             }),
           ),
         ),
-        takeWhile((result) => isPaymentPending(result), true),
+        takeWhile((result) => result.status === 'PENDING', true),
         takeUntil(timeout),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((result) => {
-        this.statusState.set(result);
-        if (result.currency) this.currencyState.set(result.currency);
-        this.messageState.set(null);
+      .subscribe({
+        next: (result) => {
+          this.statusState.set(result);
+          if (result.currency) this.currencyState.set(result.currency);
+          this.messageState.set(null);
+        },
+        error: () => this.messageState.set(PAYMENT_MESSAGES.statusUnavailable),
       });
   }
   stop(): void {

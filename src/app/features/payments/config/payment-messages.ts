@@ -4,8 +4,7 @@ export const PAYMENT_MESSAGES = {
   historyUnavailable: 'Nie udało się pobrać historii z bazy. Spróbuj ponownie.',
   offline: 'Brak połączenia z serwerem. Sprawdź, czy backend jest uruchomiony.',
   uploadFailed: 'Nie udało się przyjąć zlecenia. Sprawdź dane i spróbuj ponownie.',
-  statusUnavailable:
-    'Nie można teraz odczytać statusu. Zlecenie zostało przyjęte; ponawiamy odczyt.',
+  statusUnavailable: 'Nie udało się pobrać statusu płatności. Spróbuj ponownie.',
   pollingTimeout:
-    'Przetwarzanie trwa dłużej niż zwykle. Możesz ponownie sprawdzić status bez wysyłania zlecenia.',
+    'Nie udało się pobrać końcowego statusu płatności w wyznaczonym czasie. Sprawdź ponownie bez wysyłania zlecenia.',
 } as const;

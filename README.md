@@ -37,7 +37,7 @@ The frontend path above is relative to the workspace root. Open http://localhost
 2. Review the payment before submitting it.
 3. The frontend calculates the transaction count and total using integer minor units, builds a JSON document, and uploads it as `payment.json` through the existing multipart API.
 4. The backend validates the input and starts processing through Kafka.
-5. The frontend polls the orchestrator every 1.5 seconds for up to 90 seconds. A retry resumes status checks without uploading the payment again.
+5. The frontend polls the orchestrator every 1.5 seconds for up to 60 seconds. A temporary `404` keeps polling without an error message. `PENDING` continues polling; `OK` and `NOT_OK` stop immediately. Other HTTP errors stop polling and show an error. Reaching the deadline also stops polling with an error message. A manual retry resumes status checks without uploading the payment again.
 
 Amounts greater than zero and at most five pass the frontend and API input validation but fail Transaction Checker business validation. Use this to demonstrate a real `NOT_OK` result.
 

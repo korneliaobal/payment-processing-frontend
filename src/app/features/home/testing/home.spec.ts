@@ -67,7 +67,7 @@ describe('Home dashboard', () => {
     expect(fixture.nativeElement.querySelector('.recent-payment').textContent).toContain(
       'History sender',
     );
-    http.expectNone('https://obal-flow.up.railway.app/api/payments/upload');
+    http.expectNone('https://obal-flow-api.up.railway.app/api/payments/upload');
   });
   it('offers a fresh payment even after an earlier submission', async () => {
     sessionStorage.setItem('obalflow-submitted-id', JSON.stringify(TEST_PAYMENT_ID));

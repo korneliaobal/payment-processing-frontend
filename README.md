@@ -101,7 +101,7 @@ Reusable components receive typed inputs and emit events; they do not inject pay
 
 ## Backend connection
 
-Payment upload is configured in `src/app/features/payments/config/payment.config.ts` and calls `https://obal-flow.up.railway.app/api/payments/upload` directly. The Railway API must allow the frontend origin through CORS. Status polling and history call `https://payment-orchestrator-service-production.up.railway.app/api/payment-status/{paymentId}` and `/api/payment-history` directly using `PAYMENT_ORCHESTRATOR_BASE_URL`. Both services must allow the frontend origin through CORS. These absolute URLs bypass the development proxy; the proxy mappings below are only used when endpoints are configured as relative paths.
+Payment upload is configured in `src/app/features/payments/config/payment.config.ts` and calls `https://obal-flow-api.up.railway.app/api/payments/upload` directly. The Railway API must allow the frontend origin through CORS. Status polling and history call `https://payment-orchestrator-service-production.up.railway.app/api/payment-status/{paymentId}` and `/api/payment-history` directly using `PAYMENT_ORCHESTRATOR_BASE_URL`. Both services must allow the frontend origin through CORS. These absolute URLs bypass the development proxy; the proxy mappings below are only used when endpoints are configured as relative paths.
 
 The development proxy is defined in `src/proxy.conf.json`:
 
@@ -123,7 +123,7 @@ Production uses the same centralized API configuration and calls both Railway ba
 
 Create a Railway service from this repository. Use the repository root as the service root directory, leave build and start commands unset, and generate a public domain with target port **8080**. No API credentials or frontend environment variables are required. If a `PORT` variable is configured, set it to `8080` to match nginx.
 
-After generating the frontend domain, add its exact HTTPS origin to CORS in both backend services as a separate change. Until then, the deployed page can load, but browser API requests from its new origin will be blocked.
+The production frontend uses `https://obal-flow.up.railway.app`. Both backend services allow this origin and the development origin `http://localhost:4200` through CORS. Deploy the backend CORS changes before verifying the hosted payment flow.
 
 Verify the image locally:
 
@@ -132,7 +132,7 @@ docker build -f Dockerfile.railway -t payment-processing-frontend:railway .
 docker run --rm -p 8080:8080 payment-processing-frontend:railway
 ```
 
-Open `http://localhost:8080/payments/history` to verify the SPA route fallback. Backend CORS currently allows the development origin `http://localhost:4200`; this container check verifies static hosting rather than the payment flow.
+Open `http://localhost:8080/payments/history` to verify the SPA route fallback. Backend CORS allows `http://localhost:4200` and `https://obal-flow.up.railway.app`; this container check on port 8080 verifies static hosting rather than the payment flow.
 
 ## Verification
 

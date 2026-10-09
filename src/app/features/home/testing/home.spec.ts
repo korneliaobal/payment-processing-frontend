@@ -27,7 +27,11 @@ describe('Home dashboard', () => {
     return fixture;
   }
   function flushDashboard(empty = false) {
-    const requests = http.match((req) => req.url === '/api/payment-history');
+    const requests = http.match(
+      (req) =>
+        req.url ===
+        'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+    );
     expect(requests.length).toBe(4);
     for (const request of requests) {
       const status = request.request.params.get('status');
@@ -63,10 +67,10 @@ describe('Home dashboard', () => {
     expect(fixture.nativeElement.querySelector('.recent-payment').textContent).toContain(
       'History sender',
     );
-    http.expectNone('/api/payments/upload');
+    http.expectNone('https://obal-flow.up.railway.app/api/payments/upload');
   });
   it('offers a fresh payment even after an earlier submission', async () => {
-    sessionStorage.setItem('ledger-submitted-id', JSON.stringify(TEST_PAYMENT_ID));
+    sessionStorage.setItem('obalflow-submitted-id', JSON.stringify(TEST_PAYMENT_ID));
     const fixture = await openHome();
     flushDashboard();
     fixture.detectChanges();
@@ -75,7 +79,7 @@ describe('Home dashboard', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(TestBed.inject(Router).url).toBe('/payments/new');
-    expect(sessionStorage.getItem('ledger-submitted-id')).toBeNull();
+    expect(sessionStorage.getItem('obalflow-submitted-id')).toBeNull();
     expect(fixture.nativeElement.querySelector('input[name=debtorName]').value).toBe('');
   });
   it('shows an empty state and zero counts for a new database', async () => {
@@ -90,7 +94,11 @@ describe('Home dashboard', () => {
   });
   it('shows unavailable data explicitly and allows retry', async () => {
     const fixture = await openHome();
-    const requests = http.match((req) => req.url === '/api/payment-history');
+    const requests = http.match(
+      (req) =>
+        req.url ===
+        'https://payment-orchestrator-service-production.up.railway.app/api/payment-history',
+    );
     requests[0].flush({}, { status: 503, statusText: 'Service unavailable' });
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role=alert]').textContent).toContain(

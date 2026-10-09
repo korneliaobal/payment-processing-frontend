@@ -1,4 +1,4 @@
-# Ledger — Payment Operations
+# ObalFlow — Payment Operations
 
 A portfolio application that simulates a bank employee's payment workspace. Operators create a batch payment, review the recipients and amounts, and inspect real validation results from an event-driven backend.
 
@@ -100,6 +100,8 @@ src/app/
 Reusable components receive typed inputs and emit events; they do not inject payment services. Component styles stay with their components. Global styles contain theme tokens, typography, form controls, and layout primitives.
 
 ## Backend connection
+
+Payment upload is configured in `src/app/features/payments/config/payment.config.ts` and calls `https://obal-flow.up.railway.app/api/payments/upload` directly. The Railway API must allow the frontend origin through CORS. Status polling and history call `https://payment-orchestrator-service-production.up.railway.app/api/payment-status/{paymentId}` and `/api/payment-history` directly using `PAYMENT_ORCHESTRATOR_BASE_URL`. Both services must allow the frontend origin through CORS. These absolute URLs bypass the development proxy; the proxy mappings below are only used when endpoints are configured as relative paths.
 
 The development proxy is defined in `src/proxy.conf.json`:
 

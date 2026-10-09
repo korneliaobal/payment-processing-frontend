@@ -3,7 +3,7 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'home' },
   {
     path: 'home',
-    title: 'Pulpit operatora — Ledger',
+    title: 'Pulpit operatora — ObalFlow',
     loadComponent: () =>
       import('./features/home/pages/home/home.page').then((module) => module.HomePage),
   },

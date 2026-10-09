@@ -4,14 +4,14 @@ export const paymentRoutes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'new' },
   {
     path: 'new',
-    title: 'Nowe zlecenie — Ledger',
+    title: 'Nowe zlecenie — ObalFlow',
     canActivate: [newPaymentGuard],
     loadComponent: () =>
       import('./pages/payment-form/payment-form.page').then((module) => module.PaymentFormPage),
   },
   {
     path: 'review',
-    title: 'Weryfikacja zlecenia — Ledger',
+    title: 'Weryfikacja zlecenia — ObalFlow',
     canActivate: [draftGuard],
     canDeactivate: [uploadGuard],
     loadComponent: () =>
@@ -21,7 +21,7 @@ export const paymentRoutes: Routes = [
   },
   {
     path: 'history',
-    title: 'Historia zleceń — Ledger',
+    title: 'Historia zleceń — ObalFlow',
     loadComponent: () =>
       import('./pages/payment-history/payment-history.page').then(
         (module) => module.PaymentHistoryPage,
@@ -29,7 +29,7 @@ export const paymentRoutes: Routes = [
   },
   {
     path: ':paymentId',
-    title: 'Status płatności — Ledger',
+    title: 'Status płatności — ObalFlow',
     canActivate: [paymentIdGuard],
     loadComponent: () =>
       import('./pages/payment-result/payment-result.page').then(

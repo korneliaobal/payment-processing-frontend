@@ -10,10 +10,13 @@ export const PAYMENT_LIMITS = {
 } as const;
 export const PAYMENT_HISTORY = { pageSize: 20 } as const;
 export const PAYMENT_POLLING = { intervalMs: 1500, timeoutMs: 90000 } as const;
+export const PAYMENT_API_BASE_URL = 'https://obal-flow.up.railway.app';
+export const PAYMENT_ORCHESTRATOR_BASE_URL =
+  'https://payment-orchestrator-service-production.up.railway.app';
 export const PAYMENT_ENDPOINTS = {
-  upload: '/api/payments/upload',
-  status: '/api/payment-status',
-  history: '/api/payment-history',
+  upload: `${PAYMENT_API_BASE_URL}/api/payments/upload`,
+  status: `${PAYMENT_ORCHESTRATOR_BASE_URL}/api/payment-status`,
+  history: `${PAYMENT_ORCHESTRATOR_BASE_URL}/api/payment-history`,
 } as const;
 export const PAYMENT_ROUTES = {
   base: '/payments',
@@ -22,7 +25,7 @@ export const PAYMENT_ROUTES = {
   history: '/payments/history',
 } as const;
 export const PAYMENT_STORAGE = {
-  draft: 'ledger-draft',
-  submittedId: 'ledger-submitted-id',
-  snapshotPrefix: 'ledger-payment-',
+  draft: 'obalflow-draft',
+  submittedId: 'obalflow-submitted-id',
+  snapshotPrefix: 'obalflow-payment-',
 } as const;
